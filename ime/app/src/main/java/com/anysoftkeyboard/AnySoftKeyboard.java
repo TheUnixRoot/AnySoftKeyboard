@@ -55,9 +55,17 @@ import com.anysoftkeyboard.keyboards.KeyboardAddOnAndBuilder;
 import com.anysoftkeyboard.keyboards.KeyboardSwitcher;
 import com.anysoftkeyboard.keyboards.KeyboardSwitcher.NextKeyboardType;
 import com.anysoftkeyboard.keyboards.views.AnyKeyboardView;
+import com.anysoftkeyboard.keyboards.views.KeyboardViewContainerView;
 import com.anysoftkeyboard.prefs.AnimationsLevel;
 import com.anysoftkeyboard.rx.GenericOnError;
 import com.anysoftkeyboard.ui.VoiceInputNotInstalledActivity;
+import com.anysoftkeyboard.voice.CloudflarePermissionActivity;
+import com.anysoftkeyboard.voice.CloudflareVoiceInputView;
+import com.anysoftkeyboard.prefs.DirectBootAwareSharedPreferences;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import androidx.core.content.ContextCompat;
+import android.Manifest;
 import com.anysoftkeyboard.ui.dev.DevStripActionProvider;
 import com.anysoftkeyboard.ui.dev.DeveloperUtils;
 import com.anysoftkeyboard.ui.settings.MainSettingsActivity;
@@ -331,6 +339,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   public void onFinishInputView(boolean finishingInput) {
     super.onFinishInputView(finishingInput);
 
+    cleanUpCloudflareVoiceInput(true);
     getInputView().resetInputView();
     if (BuildConfig.DEBUG) {
       getInputViewContainer().removeStripAction(mDevToolsAction);
@@ -492,7 +501,9 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
         sendDownUpKeyEvents(KeyEvent.KEYCODE_MOVE_END);
         break;
       case KeyCodes.VOICE_INPUT:
-        if (mVoiceRecognitionTrigger.isInstalled()) {
+        if (isCloudflareSttEnabled()) {
+          startCloudflareVoiceInput();
+        } else if (mVoiceRecognitionTrigger.isInstalled()) {
           mVoiceRecognitionTrigger.startVoiceRecognition(
               getCurrentAlphabetKeyboard().getDefaultDictionaryLocale());
         } else {
@@ -1129,7 +1140,8 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
 
   @Override
   protected boolean handleCloseRequest() {
-    return super.handleCloseRequest()
+    return cleanUpCloudflareVoiceInput(true)
+        || super.handleCloseRequest()
         || (getInputView() != null && getInputView().resetInputView());
   }
 
@@ -1425,5 +1437,82 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
     Logger.d(TAG, "shift updateShiftStateNow inputSaysCaps=%s", inputSaysCaps);
     mShiftKeyState.setActiveState(inputSaysCaps);
     handleShift();
+  }
+
+  private boolean isCloudflareSttEnabled() {
+    SharedPreferences prefs = DirectBootAwareSharedPreferences.create(this);
+    return prefs.getBoolean(getString(R.string.settings_key_cloudflare_stt_enabled), false);
+  }
+
+  private void startCloudflareVoiceInput() {
+    if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+        != PackageManager.PERMISSION_GRANTED) {
+      CloudflarePermissionActivity.sCallback = granted -> {
+        if (granted) {
+          startCloudflareVoiceInputInternal();
+        }
+      };
+      Intent intent = new Intent(this, CloudflarePermissionActivity.class);
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      startActivity(intent);
+    } else {
+      startCloudflareVoiceInputInternal();
+    }
+  }
+
+  private void startCloudflareVoiceInputInternal() {
+    final KeyboardViewContainerView inputViewContainer = getInputViewContainer();
+    if (inputViewContainer == null) return;
+
+    abortCorrectionAndResetPredictionState(false);
+    cleanUpCloudflareVoiceInput(false);
+
+    final View actualInputView = (View) getInputView();
+    if (actualInputView != null) {
+      actualInputView.setVisibility(View.GONE);
+    }
+
+    SharedPreferences prefs = DirectBootAwareSharedPreferences.create(this);
+    String accountId = prefs.getString(getString(R.string.settings_key_cloudflare_account_id), "");
+    String apiToken = prefs.getString(getString(R.string.settings_key_cloudflare_api_token), "");
+    String model = prefs.getString(getString(R.string.settings_key_cloudflare_model), "@cf/openai/whisper");
+
+    CloudflareVoiceInputView voiceInputView = new CloudflareVoiceInputView(this);
+    voiceInputView.setup(accountId, apiToken, model, new CloudflareVoiceInputView.Callback() {
+      @Override
+      public void onTextTranscribed(String text) {
+        android.view.inputmethod.InputConnection ic = getCurrentInputConnection();
+        if (ic != null && text != null && !text.isEmpty()) {
+          ic.commitText(text, 1);
+        }
+      }
+
+      @Override
+      public void onFinish() {
+        cleanUpCloudflareVoiceInput(true);
+      }
+    });
+
+    inputViewContainer.addView(voiceInputView);
+  }
+
+  private boolean cleanUpCloudflareVoiceInput(boolean reshowStandardKeyboard) {
+    final KeyboardViewContainerView inputViewContainer = getInputViewContainer();
+    if (inputViewContainer == null) return false;
+
+    if (reshowStandardKeyboard) {
+      View standardKeyboardView = (View) getInputView();
+      if (standardKeyboardView != null) {
+        standardKeyboardView.setVisibility(View.VISIBLE);
+      }
+    }
+
+    View voiceInputView = inputViewContainer.findViewById(R.id.cloudflare_voice_input_root);
+    if (voiceInputView != null) {
+      inputViewContainer.removeView(voiceInputView);
+      return true;
+    } else {
+      return false;
+    }
   }
 }

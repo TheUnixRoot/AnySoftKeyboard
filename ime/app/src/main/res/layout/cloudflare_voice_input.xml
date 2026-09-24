@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cloudflare_voice_input_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#222222"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/cloudflare_stt_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cloudflare Voice Input"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/cloudflare_stt_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Recording..."
+        android:textColor="#AAAAAA"
+        android:textSize="14sp"
+        android:layout_marginBottom="16dp"/>
+
+    <ImageButton
+        android:id="@+id/cloudflare_stt_mic_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/circle_button_background"
+        android:src="@drawable/ic_av_mic_light"
+        android:scaleType="centerInside"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="Microphone"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="2">
+
+        <Button
+            android:id="@+id/cloudflare_stt_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cancel"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#444444"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/cloudflare_stt_done"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Done"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#007ACC"
+            android:layout_marginStart="8dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+</LinearLayout>

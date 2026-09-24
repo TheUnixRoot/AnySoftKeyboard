@@ -69,6 +69,57 @@
             android:title="@string/volume_key_for_left_right_support"/>
     </androidx.preference.PreferenceCategory>
 
+    <androidx.preference.PreferenceCategory
+        android:key="cloudflare_stt_group"
+        android:title="@string/cloudflare_stt_title">
+
+        <androidx.preference.SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="@string/settings_key_cloudflare_stt_enabled"
+            android:persistent="true"
+            android:title="@string/cloudflare_stt_enabled_title"
+            android:summary="@string/cloudflare_stt_enabled_summary"/>
+
+        <EditTextPreference
+            android:autoText="false"
+            android:capitalize="none"
+            android:defaultValue=""
+            android:dependency="@string/settings_key_cloudflare_stt_enabled"
+            android:dialogTitle="@string/cloudflare_account_id_title"
+            android:key="@string/settings_key_cloudflare_account_id"
+            android:lines="1"
+            android:persistent="true"
+            android:singleLine="true"
+            android:title="@string/cloudflare_account_id_title"
+            android:summary="@string/cloudflare_account_id_summary" />
+
+        <EditTextPreference
+            android:autoText="false"
+            android:capitalize="none"
+            android:defaultValue=""
+            android:dependency="@string/settings_key_cloudflare_stt_enabled"
+            android:dialogTitle="@string/cloudflare_api_token_title"
+            android:key="@string/settings_key_cloudflare_api_token"
+            android:lines="1"
+            android:persistent="true"
+            android:singleLine="true"
+            android:title="@string/cloudflare_api_token_title"
+            android:summary="@string/cloudflare_api_token_summary" />
+
+        <EditTextPreference
+            android:autoText="false"
+            android:capitalize="none"
+            android:defaultValue="@cf/openai/whisper"
+            android:dependency="@string/settings_key_cloudflare_stt_enabled"
+            android:dialogTitle="@string/cloudflare_model_title"
+            android:key="@string/settings_key_cloudflare_model"
+            android:lines="1"
+            android:persistent="true"
+            android:singleLine="true"
+            android:title="@string/cloudflare_model_title"
+            android:summary="@string/cloudflare_model_summary" />
+    </androidx.preference.PreferenceCategory>
+
     <Preference
         android:key="@string/tweaks_group_key"
         android:title="@string/tweaks_group"/>

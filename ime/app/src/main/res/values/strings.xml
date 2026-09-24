@@ -58,6 +58,23 @@
         (com.google.android.voicesearch) in the app store. Sorry, voice input will not work on your
         device.
     </string>
+
+    <!-- Cloudflare Workers AI Speech-To-Text -->
+    <string name="cloudflare_stt_title">Cloudflare Workers AI STT</string>
+    <string name="cloudflare_stt_enabled_title">Enable Cloudflare Speech-to-Text</string>
+    <string name="cloudflare_stt_enabled_summary">Transcribe voice input using Cloudflare Workers AI instead of system default.</string>
+    <string name="cloudflare_account_id_title">Cloudflare Account ID</string>
+    <string name="cloudflare_account_id_summary">Cloudflare account ID for Workers AI</string>
+    <string name="cloudflare_api_token_title">Cloudflare API Token</string>
+    <string name="cloudflare_api_token_summary">Cloudflare API Token with Workers AI Read permission</string>
+    <string name="cloudflare_model_title">Workers AI Whisper Model</string>
+    <string name="cloudflare_model_summary">Whisper model name (default: @cf/openai/whisper)</string>
+
+    <string name="settings_key_cloudflare_stt_enabled">settings_key_cloudflare_stt_enabled</string>
+    <string name="settings_key_cloudflare_account_id">settings_key_cloudflare_account_id</string>
+    <string name="settings_key_cloudflare_api_token">settings_key_cloudflare_api_token</string>
+    <string name="settings_key_cloudflare_model">settings_key_cloudflare_model</string>
+
     <!-- Options menu -->
     <string name="change_ime">Change input method</string>
     <string name="override_dictionary">Override default dictionary</string>

@@ -3,12 +3,6 @@ apply plugin: 'com.android.library'
 apply from: "${rootDir}/gradle/android_general.gradle"
 
 android {
-    ndkVersion sideBySideNdkVersion
-    externalNativeBuild {
-        cmake {
-            path 'CMakeLists.txt'
-        }
-    }
     namespace 'com.anysoftkeyboard.jnidictionaryv1'
 }
 

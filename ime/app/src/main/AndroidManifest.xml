@@ -11,6 +11,8 @@
     <!-- http://d.android.com/guide/practices/screens_support.html read about legacy. -->
 
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <!-- required for the user dictionary (long press a word in the suggestions bar) -->
     <uses-permission android:name="android.permission.READ_USER_DICTIONARY" />
     <uses-permission android:name="android.permission.WRITE_USER_DICTIONARY" />
@@ -108,6 +110,11 @@
             android:label="@string/ime_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <activity
+            android:name="com.anysoftkeyboard.voice.CloudflarePermissionActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:exported="false" />
 
     </application>
 
