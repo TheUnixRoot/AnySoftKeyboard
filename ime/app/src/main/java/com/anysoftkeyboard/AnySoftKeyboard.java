@@ -1441,7 +1441,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
 
   private boolean isCloudflareSttEnabled() {
     SharedPreferences prefs = DirectBootAwareSharedPreferences.create(this);
-    return prefs.getBoolean(getString(R.string.settings_key_cloudflare_stt_enabled), false);
+    return prefs.getBoolean(getString(R.string.settings_key_cloudflare_stt_enabled), true);
   }
 
   private void startCloudflareVoiceInput() {

@@ -74,7 +74,7 @@
         android:title="@string/cloudflare_stt_title">
 
         <androidx.preference.SwitchPreferenceCompat
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="@string/settings_key_cloudflare_stt_enabled"
             android:persistent="true"
             android:title="@string/cloudflare_stt_enabled_title"

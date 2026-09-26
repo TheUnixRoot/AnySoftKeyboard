@@ -77,7 +77,11 @@ public class ResourceBinaryDictionary extends Dictionary {
       @NonNull Context originPackageContext,
       @XmlRes int resId) {
     super(dictionaryName);
-    CompatUtils.loadNativeLibrary(originPackageContext, "anysoftkey2_jni", "1.0.3");
+    try {
+      CompatUtils.loadNativeLibrary(originPackageContext, "anysoftkey2_jni", "1.0.3");
+    } catch (Throwable t) {
+      Log.w(TAG, "Failed to load anysoftkey2_jni: " + t.getMessage());
+    }
     mOriginPackageContext = originPackageContext;
     mDictResId = resId;
   }
@@ -132,8 +136,9 @@ public class ResourceBinaryDictionary extends Dictionary {
               // http://code.google.com/p/softkeyboard/issues/detail?id=878
               try {
                 loadDictionaryFromResource(resId);
-              } catch (UnsatisfiedLinkError ex) {
+              } catch (Throwable ex) {
                 Log.w(TAG, "Failed to load binary JNI connection! Error: " + ex.getMessage());
+                mNativeDictPointer.set(0L);
               }
             });
   }
@@ -197,7 +202,7 @@ public class ResourceBinaryDictionary extends Dictionary {
   public void getSuggestions(
       final KeyCodesProvider codes,
       final WordCallback callback /*, int[] nextLettersFrequencies*/) {
-    if (isLoading() || isClosed()) return;
+    if (isLoading() || isClosed() || mNativeDictPointer.get() == 0L) return;
     final int codesSize = codes.codePointCount();
     // Won't deal with really long words.
     if (codesSize > MAX_WORD_LENGTH - 1) return;
@@ -291,6 +296,9 @@ public class ResourceBinaryDictionary extends Dictionary {
 
   @Override
   public void getLoadedWords(@NonNull GetWordsCallback callback) {
-    getWordsNative(mNativeDictPointer.get(), callback);
+    long pointer = mNativeDictPointer.get();
+    if (pointer != 0L) {
+      getWordsNative(pointer, callback);
+    }
   }
 }

@@ -142,4 +142,5 @@
     <integer name="settings_default_zoom_percent_in_landscape">100</integer>
 
     <integer name="settings_default_bottom_extra_padding_in_portrait">0</integer>
+    <bool name="settings_default_cloudflare_stt_enabled">true</bool>
 </resources>

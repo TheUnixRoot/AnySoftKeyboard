@@ -46,7 +46,11 @@ public class BinaryDictionary extends Dictionary {
       @NonNull CharSequence dictionaryName,
       @NonNull AssetFileDescriptor afd) {
     super(dictionaryName);
-    CompatUtils.loadNativeLibrary(context, "anysoftkey_jni", "1.0.1");
+    try {
+      CompatUtils.loadNativeLibrary(context, "anysoftkey_jni", "1.0.1");
+    } catch (Throwable t) {
+      Log.w(TAG, "Failed to load anysoftkey_jni: " + t.getMessage());
+    }
     mAfd = afd;
   }
 
@@ -65,8 +69,9 @@ public class BinaryDictionary extends Dictionary {
               Dictionary.TYPED_LETTER_MULTIPLIER,
               Dictionary.FULL_WORD_FREQ_MULTIPLIER);
       Log.d(TAG, "Loaded dictionary in " + (SystemClock.uptimeMillis() - startTime) + "ms");
-    } catch (UnsatisfiedLinkError ex) {
+    } catch (Throwable ex) {
       Log.w(TAG, "Failed to load binary JNI connection! Error: " + ex.getMessage());
+      mNativeDict = 0;
     }
   }
 

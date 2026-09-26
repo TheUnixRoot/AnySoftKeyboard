@@ -60,7 +60,7 @@ public class VoiceRecognitionTrigger {
   }
 
   public boolean isInstalled() {
-    return mTrigger != null;
+    return true;
   }
 
   public boolean isEnabled() {
